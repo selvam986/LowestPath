@@ -21,8 +21,10 @@ class Matrix {
     let graph = LowestPath() //Initialization
     
     
-    func processInputColumns(columns: [[Int]]) -> (Bool?, Int?, String?) {//This function process the input matrix columns and output the PathTraversingAllRow(Bool Value), Lowest Path total(Int) and Follwed Output Path(Row Numbers)
-        
+    func processInputColumns(rows: [[Any]]) -> (Bool?, Int?, String?) {//This function process the input matrix columns and output the PathTraversingAllRow(Bool Value), Lowest Path total(Int) and Follwed Output Path(Row Numbers)
+        guard let columns: [[Int]] = processMatrixRowsAndColumns(rows: rows) else {
+            return (nil, nil, nil) // if the input matrix is not correct
+        }
         for column in 0..<columns.count {//Iterating through each column
             rowCount = columns[column].count
             
@@ -38,10 +40,6 @@ class Matrix {
                 else{
                     tempVertex.append(vertexVal)
                     
-                    
-                    if columnVertex.count != columns[column].count {
-                        return (nil, nil, nil)//Irregular Matrix Input
-                    }
                     if (row == firstrow || (row != lastrow)) && rowCount != onerow {
                         graph.addEdge(source: columnVertex[nextrow], neighbor: vertexVal, weight: colValue)
                         if row == firstrow {
@@ -79,6 +77,28 @@ class Matrix {
         
         //Printing the output received
         return (pathAllRows, pathTotal!, totalPath)
+    }
+    
+    func processMatrixRowsAndColumns(rows: [[Any]]) -> [[Int]]? {
+        var columns = Array(repeating: Array(repeating: 0, count: rows.count), count: rows[0].count)
+        var columnCount: Int = 0
+        for row in 0..<rows.count {
+            if (columnCount != rows[row].count && row != 0) {
+                return nil
+            }
+            for column in 0..<rows[row].count {
+                columnCount = rows[row].count
+                let iVal: Int? = Int(String(describing: rows[row][column]))
+                if iVal != nil {
+                    columns[column][row] = iVal!
+                }
+                else {
+                    return nil
+                }
+                
+            }
+        }
+        return columns
     }
     
     func processMatrixEdges() {
