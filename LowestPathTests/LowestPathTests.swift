@@ -57,7 +57,7 @@ class LowestPathTests: XCTestCase {
         
         //Expected result match verification
         let matrix = matrixAlgorithm.processInputColumns(rows: rows)
-        XCTAssertEqual(false, matrix.0)
+        XCTAssertEqual(true, matrix.0)
         XCTAssertEqual(11, matrix.1)
         XCTAssertEqual("1 2 1 5 4 5", matrix.2)
     }
@@ -84,7 +84,7 @@ class LowestPathTests: XCTestCase {
         
         //Expected result match verification
         let matrix = matrixAlgorithm.processInputColumns(rows: rows)
-        XCTAssertEqual(false, matrix.0)
+        XCTAssertEqual(true, matrix.0)
         XCTAssertEqual(-13, matrix.1)
         XCTAssertEqual("3 3 4 4 4 5", matrix.2)
     }
@@ -99,7 +99,7 @@ class LowestPathTests: XCTestCase {
         
         //Expected result match verification
         let matrix = matrixAlgorithm.processInputColumns(rows: rows)
-        XCTAssertEqual(false, matrix.0)
+        XCTAssertEqual(true, matrix.0)
         XCTAssertEqual(3, matrix.1)
         XCTAssertEqual("5", matrix.2)
     }
