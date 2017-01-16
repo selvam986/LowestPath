@@ -45,17 +45,29 @@ class Matrix {
             }
             for column in 0..<rows[row].count {
                 columnCount = rows[row].count
-                let iVal: Int? = Int(String(describing: rows[row][column]))
-                if iVal != nil {
-                    columns[column][row] = iVal!
+                let val: Int? = Int(String(describing: rows[row][column]))
+                if val != nil {
+                    columns[column][row] = val!
                 }
                 else {
                     return nil
                 }
-                
             }
         }
         return columns
+    }
+    
+    //Testcase added
+    func verifyEachRows(input: [Any]) -> Bool {
+        print(input)
+        for value in 0..<input.count {
+            let output: Int? = Int(String(describing: input[value]))
+            print("\(output)")
+            if output == nil {
+                return false
+            }
+        }
+        return true
     }
     
     // Testcase Added

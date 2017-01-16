@@ -227,6 +227,13 @@ class LowestPathTests: XCTestCase {
         XCTAssertEqual("1 2 3 4 4 5", matrixAlgorithm.lowestPath)
     }
     
+    //Test case added to verify for the valid row entry
+    func test_Func_VerifyEachRows() {
+        
+        let rows: [Any] =     [3,4,"d",2,8,6]
+        XCTAssertEqual(false, matrixAlgorithm.verifyEachRows(input: rows))
+    }
+    
     //Lowest Path Algorithm
     //Testcase for function AddVertex
     //This class is mainly used to add new instances for the Vertex class

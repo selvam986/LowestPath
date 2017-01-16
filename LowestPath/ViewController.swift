@@ -31,11 +31,18 @@ class ViewController: UIViewController {
     @IBAction func onClickingAddRow(_ sender: Any) {
         lblErrorMsg.text = ""
         if rowTextbox.text != "" {
-            rows.append(addingRow(string: rowTextbox.text!))
-            txtRowView.text = String(describing: rows)
-            lblErrorMsg.text = "Successfully Added!"
-            lblErrorMsg.textColor = UIColor.green
-            rowTextbox.text = ""
+            if matrixAlgorithm.verifyEachRows(input: addingRow(string: rowTextbox.text!)) {
+                rows.append(addingRow(string: rowTextbox.text!))
+                txtRowView.text = String(describing: rows)
+                lblErrorMsg.text = "Successfully Added!"
+                lblErrorMsg.textColor = UIColor.green
+                rowTextbox.text = ""
+            }
+            else {
+                lblErrorMsg.text = "Please enter valid row to add!"
+                lblErrorMsg.textColor = UIColor.red
+                rowTextbox.text = ""
+            }
         }
         else{
             lblErrorMsg.text = "Please enter row to add!"
