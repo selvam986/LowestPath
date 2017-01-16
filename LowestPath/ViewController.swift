@@ -26,6 +26,7 @@ class ViewController: UIViewController {
         lblLowestTotal.text = ""
         lblRowTraversing.text = ""
         rowTextbox.text = ""
+        txtRowView.text = ""
     }
     @IBAction func onClickingAddRow(_ sender: Any) {
         lblErrorMsg.text = ""

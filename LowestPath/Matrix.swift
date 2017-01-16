@@ -10,83 +10,37 @@ import Foundation
 import UIKit
 
 class Matrix {
-    
-    
-    
     var maxLimit = 50//Maximum allowed total path cost limit
-    var columnVertex: Array<Vertex> = [], vertex: Array<Vertex> = [], tempVertex: Array<Vertex>  = []//Vertex local variables for iterating through neighbors
-    var rowInfo: [String:(Int, Int, Int)] = [:]//This dictionary contains key as "row & column number combination" & value as "corresponding row/ column value and individual row number & individual column number"
     
-    var pathTotal: Int?, rowCount: Int?, columnCount: Int?, pathAllColumns: Bool = true, lowestPath: String?//Three Output Variables
-    let graph = LowestPath() //Initialization
+    var pathTotal: Int?, columnCount: Int?, pathAllRows: Bool = true, lowestPath: String?, bestPath: Path?, sourceVertex: Vertex?//Three Output Variables
+    let pathAlgorithm = LowestPath() //Initialization
     
-    
-    func processInputColumns(rows: [[Any]]) -> (Bool?, Int?, String?) {//This function process the input matrix columns and output the PathTraversingAllRow(Bool Value), Lowest Path total(Int) and Follwed Output Path(Row Numbers)
-        guard let columns: [[Int]] = processMatrixRowsAndColumns(rows: rows) else {
+    // Testcase Added
+    // This is main function will call all the required functions to populate the lowest path, lowest path cost and all column traversing bool value
+    func processInputColumns(rows: [[Any]]) -> (Bool?, Int?, String?) {
+        guard let columns: [[Int]] = processOfReversingRowsAndColumns(rows: rows) else {
             return (nil, nil, nil) // if the input matrix is not correct
         }
-        columnCount = columns.count
-        for column in 0..<columns.count {//Iterating through each column
-            rowCount = columns[column].count
-            
-            for row in 0..<columns[column].count {//Iterating each row value in a single column
-                let lastrow = columns[column].count-1, firstrow = 0, onerow = 1, nextrow = row+1, prevrow = row-1, colValue = columns[column][row]//variables declared to iterate the columns
-                
-                let vertexVal = graph.addVertex(key: "\(row)\(column)")//adding Vertex to our graph
-                rowInfo["\(row)\(column)"] = (colValue, row+1, column+1)//stores column value and column number
-                if (column == 0){
-                    columnVertex.append(vertexVal)
-                    vertex.append(vertexVal)
-                }
-                else{
-                    tempVertex.append(vertexVal)
-                    
-                    if (row == firstrow || (row != lastrow)) && rowCount != onerow {
-                        graph.addEdge(source: columnVertex[nextrow], neighbor: vertexVal, weight: colValue)
-                        if row == firstrow {
-                            graph.addEdge(source: columnVertex[lastrow], neighbor: vertexVal, weight: colValue)
-                        }
-                    }
-                    if ((row == lastrow) || (row != firstrow)) && rowCount != onerow {
-                        graph.addEdge(source: columnVertex[prevrow], neighbor: vertexVal, weight: colValue)
-                        if row == lastrow {
-                            graph.addEdge(source: columnVertex[firstrow], neighbor: vertexVal, weight: colValue)
-                        }
-                    }
-                    graph.addEdge(source: columnVertex[row], neighbor: vertexVal, weight: colValue)
-                }
-            }
-            
-            if (column != 0) {//This condition is mainly for the iteration of the neighbor column
-                columnVertex.removeAll(); columnVertex = tempVertex; tempVertex.removeAll()
-            }
-        }
-        //Processing Matrix Edges
+        processAddingVertex(columns: columns)
         processMatrixEdges()
         
-        var totalPath: String = lowestPath!, columnTraversing: String = lowestPath!
-        for (key, value) in rowInfo {
-            totalPath = totalPath.replacingOccurrences(of: key, with: String(value.1))
-            columnTraversing = columnTraversing.replacingOccurrences(of: key, with: String(value.2))
-        }
-        
-        let columnVerification = columnTraversing.components(separatedBy: " ")
-        for i in 1...columnCount! {
-            if !columnVerification.contains(String(i)) {
-                pathAllColumns = false
-                break
-            }
-        }
-        
         //Printing the output received
-        return (pathAllColumns, pathTotal!, totalPath)
+        return (pathAllRows, pathTotal, lowestPath)
     }
     
-    func processMatrixRowsAndColumns(rows: [[Any]]) -> [[Int]]? {
+    // Testcase Added
+    //Step: 1 - Reversing the Rows And Columns
+    //-----------------------------------------
+    //Reason 1: Input matrix got in the format easy for user reading
+    //Reason 2: Algorithm is going to process lowest path with the reference of each column(as per the requirement provided - path will start from left and move to right)
+    
+    //Step: 2 - Performing the matrix vaidation for wrong input(like alphabets - test case added) and irregular matrix(like uneven count rows and columns)
+    //--------------------------------------------
+    func processOfReversingRowsAndColumns(rows: [[Any]]) -> [[Int]]? {
         var columns = Array(repeating: Array(repeating: 0, count: rows.count), count: rows[0].count)
         var columnCount: Int = 0
         for row in 0..<rows.count {
-            if (columnCount != rows[row].count && row != 0) {
+            if columnCount != rows[row].count && row != 0 {
                 return nil
             }
             for column in 0..<rows[row].count {
@@ -104,24 +58,67 @@ class Matrix {
         return columns
     }
     
-    func processMatrixEdges() {
-        //Processing the algorithm using the first row values
-        for i in 0..<vertex.count {
-            for j in 0..<columnVertex.count {
-                //Output is a tuple contains (lowest total, best path)
-                let path = graph.processLowestPath(source: vertex[i], destination: columnVertex[j])
-                let row = String(i)+"0", sourceValue = rowInfo[row]!
-                //Condition verification for the current path cost is the best lowest path cost we received
-                if path.0!.total != nil {
-                    if (pathTotal == nil || pathTotal! > (Int(path.0!.total) + sourceValue.0)) {
-                        let lowestCostVal = graph.findBestLowPath(path:path.0!, total: path.0!.total, difference: sourceValue.0, source: vertex[i])
-                        pathTotal = sourceValue.0 > maxLimit ? 0 : Int(lowestCostVal.0.total) + rowInfo[row]!.0
-                        lowestPath = sourceValue.0 > maxLimit ? "" : lowestCostVal.1
+    // Testcase Added
+    //Step: 3 - Adding the each matrix entries as Vertex
+    //-------------------------------------------
+    // Note: In this vertex is referring the individual matrix entries (like each row/column entries)
+    // Note: Matrix is processed in the form of 
+    // 3 * 3 matrix
+    //      [ 00 01 02
+    //        10 11 12
+    //        20 21 22 ]
+    // Note: In the above matrix formation, 00 is reffering the corresponding Vertex key
+    
+    // Variable Definition:
+    // columns - all the columns in the matrix
+    // column  - each individual column
+    // rows    - all the rows in the matrix
+    // row     - each individual row
+    // columnCount - overall columns count
+    
+    // Step: 4 - Finding Neighbour Edges
+    //----------------------------------
+    // Before adding each individual edges, we have to find the corresponding neighbor for each individual vertex( this is based on the requirement provided)
+    
+    // Step: 5 - Adding each edge to provide connection between each vertex
+    //--------------------------------------
+    // Adding Edge - In this algorithm, edge is referring the element to connect two different vertex(two nodes in the graph)
+    
+    func processAddingVertex(columns : [[Int]]) {
+        for column in 0..<columns.count {
+            columnCount = columns.count
+            
+            for row in 0..<columns[column].count {//Iterating each row value in a single column
+                let vertex = pathAlgorithm.addVertex(row: row, column: column, cost: columns[column][row])
+                if column != 0 {
+                    var arr = pathAlgorithm.findingNeighbors(row: row, column: column, rowCount: columns[column].count)
+                    for neighborVertex in 0..<arr.count {
+                        pathAlgorithm.addEdge(source: arr[neighborVertex], neighbor: vertex, weight: vertex.cost!)
                     }
                 }
-                else {
-                    pathTotal = sourceValue.0 > maxLimit ? 0 : sourceValue.0
-                    lowestPath = sourceValue.0 > maxLimit ? "" : row
+            }
+        }
+    }
+    
+    // Testcase Added
+    //Step 6: This is final processing step for the lowest cost path
+    //------------------------------------------
+    // Note: Algorithm will result in tuple consists of three outputs and a best path (Path() variable) for test case to test this function output
+    // Note: Mentioned the condition columnNumber =1, to provide only the first column as the input for the path(based on the requirement provided)
+    // Note: function processLowestPath will process the input source vertex and provide the outputs
+    
+    func processMatrixEdges() {
+        var pathTraverseCount : Int = 0
+        for (_, vertex) in pathAlgorithm.canvas {
+            if vertex.columnNumber == 1 {
+                let outputPath = pathAlgorithm.processLowestPath(source: vertex)
+                if pathTotal == nil || pathTotal! > outputPath.0 && outputPath.2 >= pathTraverseCount {
+                    pathTotal = outputPath.0
+                    lowestPath = outputPath.1
+                    pathAllRows = (outputPath.2 == columnCount ? true: false)
+                    pathTraverseCount = outputPath.2
+                    bestPath = outputPath.3
+                    sourceVertex = vertex
                 }
             }
         }
