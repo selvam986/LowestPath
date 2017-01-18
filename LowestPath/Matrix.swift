@@ -135,4 +135,13 @@ class Matrix {
             }
         }
     }
+    
+    func clearGlobalVariables() {
+        pathTotal = nil
+        lowestPath = nil
+        pathAllRows = true
+        bestPath = nil
+        sourceVertex = nil
+        pathAlgorithm.canvas.removeAll()
+    }
 }

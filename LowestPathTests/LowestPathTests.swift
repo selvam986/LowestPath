@@ -277,6 +277,26 @@ class LowestPathTests: XCTestCase {
         XCTAssertEqual(16, output.0)
         XCTAssertEqual("1 2 3 4 4 5", output.1)
         
+        //Third Testcase - Big Numbers
+        //Example With Big Numbers
+        let rows2: [[Int]] = [[199,10,19,10,19],
+                              [210,23,20,19,12],
+                              [200,12,20,11,10]]
+        
+        matrixAlgorithm.clearGlobalVariables()
+        
+        //Expected result match verification
+        let columns2: [[Int]] = matrixAlgorithm.processOfReversingRowsAndColumns(rows: rows2)!
+        matrixAlgorithm.processAddingVertex(columns: columns2)
+        matrixAlgorithm.processMatrixEdges()
+        
+        let output2 = matrixAlgorithm.pathAlgorithm.processLowestPath(source: matrixAlgorithm.sourceVertex!)
+        XCTAssertEqual(0, output2.2)
+        XCTAssertEqual(0, output2.0)
+        XCTAssertEqual("", output2.1)
+        
+        matrixAlgorithm.clearGlobalVariables()
+        
         //Second Testcase - Only Single Column
         let rows1: [[Int]] = [[3],
                               [6],
@@ -292,13 +312,17 @@ class LowestPathTests: XCTestCase {
         let output1 = matrixAlgorithm.pathAlgorithm.processLowestPath(source: matrixAlgorithm.sourceVertex!)
         XCTAssertEqual(1, output1.2)
         XCTAssertEqual(3, output1.0)
-        XCTAssertEqual("5", output1.1)
-        
+        XCTAssertEqual("1", output1.1)
+    }
+    
+    func test_Func_ProcessLowestPath_Combination1() {
         //Third Testcase - Big Numbers
         //Example With Big Numbers
         let rows2: [[Int]] = [[199,10,19,10,19],
                               [210,23,20,19,12],
                               [200,12,20,11,10]]
+        
+        
         
         //Expected result match verification
         let columns2: [[Int]] = matrixAlgorithm.processOfReversingRowsAndColumns(rows: rows2)!
@@ -309,6 +333,103 @@ class LowestPathTests: XCTestCase {
         XCTAssertEqual(0, output2.2)
         XCTAssertEqual(0, output2.0)
         XCTAssertEqual("", output2.1)
+        
+        matrixAlgorithm.clearGlobalVariables()
+        
+        //Second Testcase - Only Single Column
+        let rows1: [[Int]] = [[3],
+                              [6],
+                              [5],
+                              [8],
+                              [3]]
+        
+        //Expected result match verification
+        let columns1: [[Int]] = matrixAlgorithm.processOfReversingRowsAndColumns(rows: rows1)!
+        matrixAlgorithm.processAddingVertex(columns: columns1)
+        matrixAlgorithm.processMatrixEdges()
+        
+        let output1 = matrixAlgorithm.pathAlgorithm.processLowestPath(source: matrixAlgorithm.sourceVertex!)
+        XCTAssertEqual(1, output1.2)
+        XCTAssertEqual(3, output1.0)
+        XCTAssertEqual("1", output1.1)
+        matrixAlgorithm.clearGlobalVariables()
+        //First Testcase - Lot of rows and columns
+        let rows: [[Int]] =     [[3,4,1,2,8,6],
+                                 [6,1,8,2,7,4],
+                                 [5,9,3,9,9,5],
+                                 [8,4,1,3,2,6],
+                                 [3,7,2,8,6,4]]
+        let columns: [[Int]] = matrixAlgorithm.processOfReversingRowsAndColumns(rows: rows)!
+        matrixAlgorithm.processAddingVertex(columns: columns)
+        matrixAlgorithm.processMatrixEdges()
+        
+        let output = matrixAlgorithm.pathAlgorithm.processLowestPath(source: matrixAlgorithm.sourceVertex!)
+        
+        //Expected result match verification
+        XCTAssertEqual(6, output.2)
+        XCTAssertEqual(16, output.0)
+        XCTAssertEqual("1 2 3 4 4 5", output.1)
+    }
+    
+    func test_Func_ProcessLowestPath_Combination2() {
+        //Third Testcase - Big Numbers
+        //Example With Big Numbers
+        let rows2: [[Any]] = [[3,"q",1,"s",8,6],
+                              [6,1,8,2,7,4],
+                              [5,9,"a",9,9,5],
+                              [8,"s",1,3,2,6],
+                              [3,7,2,1,2,3]]
+    
+        //Expected result match verification
+        let matrix = matrixAlgorithm.processOfReversingRowsAndColumns(rows: rows2)
+        if matrix != nil {
+            matrixAlgorithm.processAddingVertex(columns: matrix!)
+            matrixAlgorithm.processMatrixEdges()
+            
+            let output2 = matrixAlgorithm.pathAlgorithm.processLowestPath(source: matrixAlgorithm.sourceVertex!)
+            XCTAssertEqual(0, output2.2)
+            XCTAssertEqual(0, output2.0)
+            XCTAssertEqual("", output2.1)
+        }
+        else {
+            XCTAssertEqual("", matrix == nil ? "" : String(describing: matrix!))
+        }
+        
+        matrixAlgorithm.clearGlobalVariables()
+        
+        //First Testcase - Lot of rows and columns
+        let rows: [[Int]] =     [[1,1,4]]
+        let columns: [[Int]] = matrixAlgorithm.processOfReversingRowsAndColumns(rows: rows)!
+        matrixAlgorithm.processAddingVertex(columns: columns)
+        matrixAlgorithm.processMatrixEdges()
+        
+        let output = matrixAlgorithm.pathAlgorithm.processLowestPath(source: matrixAlgorithm.sourceVertex!)
+        
+        //Expected result match verification
+        XCTAssertEqual(3, output.2)
+        XCTAssertEqual(6, output.0)
+        XCTAssertEqual("1 1 1", output.1)
+        
+        matrixAlgorithm.clearGlobalVariables()
+        
+        //Second Testcase - Only Single Column
+        let rows1: [[Int]] = [[3],
+                              [6],
+                              [5],
+                              [8],
+                              [3]]
+        
+        //Expected result match verification
+        let columns1: [[Int]] = matrixAlgorithm.processOfReversingRowsAndColumns(rows: rows1)!
+        matrixAlgorithm.processAddingVertex(columns: columns1)
+        matrixAlgorithm.processMatrixEdges()
+        
+        let output1 = matrixAlgorithm.pathAlgorithm.processLowestPath(source: matrixAlgorithm.sourceVertex!)
+        XCTAssertEqual(1, output1.2)
+        XCTAssertEqual(3, output1.0)
+        XCTAssertEqual("1", output1.1)
+        
+        
     }
     
     // Testcase to test the function to derive the lowest path string consisting of all the row numbers traversed
